@@ -1,0 +1,94 @@
+***********************1****************************************
+Input: raw wiki file
+Output: title and the link who the title link to
+Parameter: data{}  key as title ; value as the link who the title link to
+
+1. for every line in files:
+2.     if line contains substring "<title>":
+3.         then data add key who is included by label <title>
+4.         while not reach the next title:
+5.             read next line
+6.             data[key] add link who is included by lable <[[]]>
+7.         end while
+8.     end if
+9. end for
+
+
+***********************2 and 3**********************************
+Input:data{}
+Output: data{}
+
+1. for (key,value) in data:
+2.    for every link in value:
+3.        if link contains '#',':':
+4.            delete link
+5.        end if
+6.        if value is empty:
+7.            delete data[key]
+8.        end if
+9.    end for
+10. end for
+
+
+***********************4****************************************
+Input:data{}
+Output: data{}
+
+1. for (key,value) in data:
+2.     the first letter in key convert to upper case
+3.     for every link in value:
+4.         the first letter in link convert to upper case
+5.     end for
+6. end for
+
+***********************5****************************************
+map phase:
+Input:data{}
+Output: newdata[]
+1. for (key,value) in data:
+2.     for every link in value:
+3.         newdata append (key,link)
+4.         newdata append (link,key)
+5.     end for
+6. end for
+
+reduce phase:
+Input:newdata[]
+Output:data{}
+1. for every value in newdata[] who has the same key:
+2.     data[key]=the array of all the value
+3. end for
+
+***********************6****************************************
+Input:data{}
+Output: connected component as CNCP[]
+1. idx=0
+2. while data is not empty:
+3.    pick up a random (key,value) in data
+4.    dalete data[key]
+5.    create a empty queue
+6.    queue append key
+7.    while queue is not empty:
+8.        head pop a key from queue as key
+9.        if key in data:
+10.           queue append all the link in data[key]
+11.           delete data[key]
+12.       end if
+13.       CNCP[i] append key
+14.   end while
+15.   idx+=1
+16.end while
+
+***********************7****************************************
+Input:data{},start_word,end_word
+Output:the number of the shortest distance between start_word and end_word
+
+1. def find(start_word[],end_word,deep=0):
+2.     next_loop=[]
+3.     for word in start_word:
+4.         if word==end_word:
+5.             return deep
+6.         end if
+7.         next_loop append all the link in data[word]
+8.     end for
+9.     return find(next_loop,end_word,deep+1)
